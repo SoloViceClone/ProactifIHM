@@ -5,6 +5,9 @@
  */
 package fr.insalyon.proactifihm;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.logging.Level;
@@ -20,8 +23,8 @@ import service.Service;
  *
  * @author caoxu
  */
-@WebServlet(name = "ActionServlet", urlPatterns = {"/ActionServlet"})
-public class ActionServlet extends HttpServlet {
+@WebServlet(name = "LoginServlet", urlPatterns = {"/LoginServlet"})
+public class LoginServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -34,28 +37,37 @@ public class ActionServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet ActionServlet</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet ActionServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+        System.out.println("Controller");
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        //Service sv = new Service();
+        PrintWriter out = response.getWriter();
+        String action = request.getParameter("action");
+        System.out.println(action);
+        if ("connecter".equals(action)) {
+            String login = request.getParameter("login");
+            String password = request.getParameter("password");
+           
+            /*
+            try {
+                sv.connexionClient(login,password);
+                out.println(gson.toJson(new JsonObject()));
+                System.out.println("OK");
+                out.close();
+            } catch (Exception ex) {
+                out.println(gson.toJson(new JsonObject()));
+                System.out.println("Error");
+                out.close();
+            }
+            */
         }
-    }
-    
-    protected void connecter(String login, String password) {
-        Service s = new Service();
-        try {
-            s.connexionClient(login, password);
-        } catch (Exception ex) {
-            System.out.print("Error");
-        }
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonObject jo = new JsonObject();
+        jo.addProperty("id", true);
+        JsonObject container = new JsonObject();
+        container.add("nom",jo);
+        out.println(gson.toJson(container));
+        out.close();
     }
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
