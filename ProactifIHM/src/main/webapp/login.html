@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Exemple de page de login</title>
+        <meta charset="UTF-8">
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    </head>
+    <body>
+        <h1>Formulaire de login</h1>
+        Identifiant : <input type="text" id="champ-login" name="login" placeholder="votre identifiant" /><br>
+        Mot de passe : <input type="password" id="champ-password" name="password" /><br>
+        <button id="bouton-connexion">Se connecter</button>   
+        <div id="message"></div>
+        
+        <script>
+
+            function connexion() {
+                var champLogin = $('#champ-login').val();
+                var champPassword = $('#champ-password').val();
+
+                $('#message').html('Connexion en cours...');
+
+                $.ajax({
+                    url: './ActionServlet',
+                    method: 'POST',
+                    data: {
+                        action: 'connecter',
+                        login: champLogin,
+                        password: champPassword
+                    },
+                    dataType: 'json'
+                }).done(function (data) {
+                    // ici votre code...
+                    // 
+                    // si connexion ok, aller sur la page suivante :
+                    window.location = "maPageSuivante.html";
+                    // si connexion pas ok afficher un texte dans la div message :
+                    $('#message').html('Echec de la connexion');
+                });
+            }
+
+            $(document).ready(function () {
+                // ajout d'un "handler" sur le clic du bouton de connexion
+                $('#bouton-connexion').on('click', function () {
+                    // affichage pour debugage dans la console javascript du navigateur
+                    console.log('Click sur le bouton "Se Connecter"');
+                    // appel de la fonction connexion
+                    connexion();
+                });
+            });
+            
+        </script>
+    </body>
+</html>
