@@ -45,7 +45,10 @@ public class ActionServlet extends HttpServlet {
             out.println("</html>");
         }
     }
-
+    
+    protected void connecter(String login, String password) {
+        Service s = new Service();
+    }
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
