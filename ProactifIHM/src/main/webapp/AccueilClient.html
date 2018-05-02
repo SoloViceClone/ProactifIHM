@@ -21,7 +21,7 @@
                 $('#message').html('Connexion en cours...');
 
                 $.ajax({
-                    url: './LoginServlet',
+                    url: './ActionServlet',
                     method: 'POST',
                     data: {
                         action: 'connecter',
@@ -33,11 +33,8 @@
                     // ici votre code...
                     // 
                     // si connexion ok, aller sur la page suivante :
-                    console.log("ok");
-                    window.location = "index.html";
+                    window.location = "maPageSuivante.html";
                     // si connexion pas ok afficher un texte dans la div message :
-                    //$('#message').html('Reussit de la connexion');
-                }).fail(function() {
                     $('#message').html('Echec de la connexion');
                 });
             }
@@ -49,7 +46,6 @@
                     console.log('Click sur le bouton "Se Connecter"');
                     // appel de la fonction connexion
                     connexion();
-                    console.log('Connexion');
                 });
             });
             
