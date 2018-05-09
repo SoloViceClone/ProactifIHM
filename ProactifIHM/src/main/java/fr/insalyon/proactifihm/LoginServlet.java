@@ -40,33 +40,24 @@ public class LoginServlet extends HttpServlet {
         System.out.println("Controller");
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        //Service sv = new Service();
+        Service sv = new Service();
         PrintWriter out = response.getWriter();
         String action = request.getParameter("action");
         System.out.println(action);
         if ("connecter".equals(action)) {
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
             String login = request.getParameter("login");
             String password = request.getParameter("password");
            
-            /*
             try {
                 sv.connexionClient(login,password);
                 out.println(gson.toJson(new JsonObject()));
-                System.out.println("OK");
                 out.close();
             } catch (Exception ex) {
                 out.println(gson.toJson(new JsonObject()));
                 System.out.println("Error");
-                out.close();
             }
-            */
         }
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        JsonObject jo = new JsonObject();
-        jo.addProperty("id", true);
-        JsonObject container = new JsonObject();
-        container.add("nom",jo);
-        out.println(gson.toJson(container));
         out.close();
     }
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
