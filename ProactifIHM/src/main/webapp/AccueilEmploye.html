@@ -1,16 +1,54 @@
 <!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
 <html>
     <head>
-        <title>TODO supply a title</title>
+        <title>Exemple de page de login</title>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     </head>
     <body>
-        <div>TODO write content</div>
+        <h1>Proact'IF pro</h1>
+        <input type="text" id="champ-login" name="login" placeholder="Adresse mail" /><br>
+        <input type="password" id="champ-password" name="password" placeholder="Mot de passe" /><br>
+        <button id="bouton-connexion">Se connecter</button>   
+        <div id="message"></div>
+        
+        <script>
+
+            function connexion() {
+                var champLogin = $('#champ-login').val();
+                var champPassword = $('#champ-password').val();
+
+                $('#message').html('Connexion en cours...');
+
+                $.ajax({
+                    url: './LoginServlet',
+                    method: 'POST',
+                    data: {
+                        action: 'connecter',
+                        login: champLogin,
+                        password: champPassword
+                    },
+                    dataType: 'json'
+                }).done(function (data) {
+                    // ici votre code...
+                    // 
+                    // si connexion ok, aller sur la page suivante :
+                    window.location = "MainClient.html";
+                    // si connexion pas ok afficher un texte dans la div message :
+                    $('#message').html('Echec de la connexion');
+                });
+            }
+
+            $(document).ready(function () {
+                // ajout d'un "handler" sur le clic du bouton de connexion
+                $('#bouton-connexion').on('click', function () {
+                    // affichage pour debugage dans la console javascript du navigateur
+                    console.log('Click sur le bouton "Se Connecter"');
+                    // appel de la fonction connexion
+                    connexion();
+                });
+            });
+            
+        </script>
     </body>
 </html>
