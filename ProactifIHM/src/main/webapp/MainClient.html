@@ -9,8 +9,76 @@ and open the template in the editor.
         <title>TODO supply a title</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     </head>
+    
     <body>
-        <div>TODO write content</div>
+        <div>Header</div>
+        <div id="header">User</div>
+        <br/>
+        <h2>Incident</h2>
+        <input type="text" id="descIncident" placeholder="Description" /><br/>
+        <button id="button-incident">Creer Intervention 1</button>
+        <br/>
+        
+        <h2>Livraison</h2>
+        <input type="text" id="descLivraison" placeholder="Description" />
+        <input type="text" id="objet" placeholder="Objet" />
+        <input type="text" id="entreprise" placeholder="Entreprise" /><br/>
+        <button id="button-livraison">Creer Intervention 2</button>
+        <br/>
+        <script>
+            function incident() {
+                champDesc = $("#descIncident").val();
+                $.ajax({
+                    url: './ClientServlet',
+                    method: 'POST',
+                    data: {
+                        action: 'creerIncident',
+                        description: champDesc,                        
+                    },
+                    datatype: 'json'
+                });
+            }
+            
+            function livraison() {
+                champDesc = $("#descLivraison").val();
+                champObjet = $("#objet").val();
+                champEntreprise = $("#entreprise").val();
+                $.ajax({
+                    url: './ClientServlet',
+                    method: 'POST',
+                    data: {
+                        action: 'creerLivraison',
+                        description: champDesc,
+                        objet: champObjet,
+                        entreprise: champEntreprise,
+                    },
+                    datatype: 'json'
+                });
+            }
+            
+            $(document).ready(function () {
+                $('#button-livraison').on('click',function () {
+                    livraison();
+                });
+                
+                $('#button-incident').on('click',function () {
+                    incident();
+                });
+                
+                $.ajax({
+                    url: './ClientServlet',
+                    method: 'GET',
+                    data: {
+                        action: 'getUser'
+                    }
+                }).done(function(data) {
+                    $('#header').html('User ' + data.nom + ' ' + data.prenom);
+                });
+            });
+            
+            
+        </script>
     </body>
 </html>

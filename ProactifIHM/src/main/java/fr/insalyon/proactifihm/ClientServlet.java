@@ -21,7 +21,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import modele.Animal;
 import modele.Client;
+import modele.Incident;
+import modele.Intervention;
+import modele.Livraison;
 import service.Service;
 
 /**
@@ -44,7 +48,6 @@ public class ClientServlet extends HttpServlet {
             throws ServletException, IOException {
         JpaUtil.init();
         HttpSession session = request.getSession(true);
-        session.setAttribute("x","test");
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
@@ -55,11 +58,22 @@ public class ClientServlet extends HttpServlet {
             String mail = request.getParameter("login");
             String password = request.getParameter("password");
             connexionClient(out,mail,password,session,sv);
-            System.out.println(session.getAttribute("x"));
         } else if ("inscription".equals(action)) {
-            
             inscriptionClient(request,out,sv);
-            System.out.println(session.getAttribute("x"));
+        } else if ("getUser".equals(action)) {
+            getUser(session,out);
+        } else if ("creerIncident".equals(action)) {
+            String desc = request.getParameter("description");
+            creerInterIncident(session,out,sv,desc);
+        } else if ("creerLivraison".equals(action)) {
+            String desc = request.getParameter("description");
+            String objet = request.getParameter("objet");
+            String entreprise = request.getParameter("entreprise");
+            creerInterLivraison(session,out,sv,desc,objet,entreprise);
+        } else if ("creerAnimal".equals(action)) {
+            String desc = request.getParameter("description");
+            String animal = request.getParameter("animal");
+            creerInterAnimal(session,out,sv,desc,animal);
         }
         out.close();
         JpaUtil.destroy();
@@ -77,21 +91,21 @@ public class ClientServlet extends HttpServlet {
             session.setAttribute("loggedIn", true);
             j.addProperty("connexion",true);
             j.addProperty("id",c.getId());
-            session.setAttribute("idUser", c.getId());
             j.addProperty("nom",c.getNom());
             j.addProperty("prenom",c.getPrenom());
-            j.addProperty("mail",c.getMail());
-            session.setAttribute("mail",c.getMail());
+            j.addProperty("mail",c.getMail()); 
             j.addProperty("rue",c.getRue());
             j.addProperty("ville",c.getVille());
             j.addProperty("pays",c.getPays());
             j.addProperty("numero",c.getNumero());
             j.addProperty("lat",c.getLat());
             j.addProperty("lon",c.getLon());
-            session.setAttribute("password",pw);
+            
+            session.setAttribute("loggedIn", true);
+            session.setAttribute("client",c);
         } catch (Exception ex) {
             j.addProperty("connexion",false);
-            session.setAttribute("loggedIn", "false");
+            session.setAttribute("loggedIn", false);
         }
         
         JsonObject container = new JsonObject();
@@ -135,6 +149,65 @@ public class ClientServlet extends HttpServlet {
         }
         out.write(gson.toJson(j));
         
+    }
+    
+    protected void getUser(HttpSession session, PrintWriter out) {
+        Client c;
+        c = (Client) session.getAttribute("client");
+        
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonObject j = new JsonObject();
+        j.addProperty("nom", c.getNom());
+        j.addProperty("prenom", c.getPrenom());
+        out.write(gson.toJson(j));
+    }
+    
+    protected void creerInterIncident(HttpSession session, PrintWriter out, Service s, String desc) {
+        Intervention i = new Incident(desc);
+        Client c = (Client) session.getAttribute("client");
+        System.out.println(c.getNom() + " " + c.getPrenom());
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonObject j = new JsonObject();
+        try {
+            s.ajouterUneIntervention(i, c);
+            j.addProperty("incidentCree",true);
+        } catch (Exception ex) {
+            j.addProperty("incidentCree",false);
+        }
+        out.write(gson.toJson(j));
+    }
+    
+    protected void creerInterAnimal(HttpSession session, PrintWriter out, Service s, String desc, String animal) {
+        Intervention i = new Animal(desc,animal);
+        
+        Client c = (Client) session.getAttribute("client");
+        System.out.println(c.getNom() + " " + c.getPrenom());
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonObject j = new JsonObject();
+        try {
+            s.ajouterUneIntervention(i, c);
+            j.addProperty("incidentCree",true);
+        } catch (Exception ex) {
+            j.addProperty("incidentCree",false);
+        }
+        out.write(gson.toJson(j));
+    }
+    
+    protected void creerInterLivraison(HttpSession session, PrintWriter out, Service s,
+            String desc, String objet, String entreprise) {
+        Intervention i = new Livraison(desc,objet,entreprise);
+        
+        Client c = (Client) session.getAttribute("client");
+        System.out.println(c.getNom() + " " + c.getPrenom());
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonObject j = new JsonObject();
+        try {
+            s.ajouterUneIntervention(i, c);
+            j.addProperty("livraisonCree",true);
+        } catch (Exception ex) {
+            j.addProperty("livraisonCree",false);
+        }
+        out.write(gson.toJson(j));
     }
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
