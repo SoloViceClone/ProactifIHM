@@ -6,7 +6,7 @@
         <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     </head>
     <body>
-        <h1>Proact'IF pro</h1>
+        <h1>Proact'IF pro grege</h1>
         <input type="text" id="champ-login" name="login" placeholder="Adresse mail" /><br>
         <input type="password" id="champ-password" name="password" placeholder="Mot de passe" /><br>
         <button id="bouton-connexion">Se connecter</button>   
@@ -21,10 +21,10 @@
                 $('#message').html('Connexion en cours...');
 
                 $.ajax({
-                    url: './LoginServlet',
+                    url: './ActionServlet',
                     method: 'POST',
                     data: {
-                        action: 'connecter',
+                        action: 'connecterEmploye',
                         login: champLogin,
                         password: champPassword
                     },
@@ -33,9 +33,13 @@
                     // ici votre code...
                     // 
                     // si connexion ok, aller sur la page suivante :
-                    window.location = "MainClient.html";
+                    if(data.connexion){
+                        window.location = "MainEmploye.html";
+                    } else {
+                        $('#message').html('Echec de la connexion');
+                    }
                     // si connexion pas ok afficher un texte dans la div message :
-                    $('#message').html('Echec de la connexion');
+                    
                 });
             }
 
