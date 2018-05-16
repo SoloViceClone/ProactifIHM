@@ -13,7 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import modele.Client;
+import modele.*;
 import service.Service;
 /**
  *
@@ -57,8 +57,28 @@ public class Action {
         }
     }
 
-    public static void inscription1(HttpServletRequest request, HttpServletResponse response) {
+    public static void connexionEmploye(HttpServletRequest request, HttpServletResponse response)
+    {
+        response.setContentType("application/json");
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonObject json = new JsonObject();
         
+        Employe e;
+        Service s = new Service();
+        try{
+            e = s.connexionEmploye(request.getParameter("login"), request.getParameter("password"));
+            json.addProperty("connexion", Boolean.TRUE);
+        } catch (Exception ex) {
+            //Logger.getLogger(Action.class.getName()).log(Level.SEVERE, null, ex);
+            json.addProperty("connexion", Boolean.FALSE);
+        }
+        
+        try {
+            response.getWriter().println(gson.toJson(json));
+            response.getWriter().close();
+        } catch (IOException ex) {
+            Logger.getLogger(Action.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
 }
