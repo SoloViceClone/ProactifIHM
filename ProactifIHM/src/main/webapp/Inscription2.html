@@ -9,6 +9,7 @@ and open the template in the editor.
         <title>Suite inscription</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     </head>
     <body>
         <h1>Inscription</h1>
@@ -16,13 +17,32 @@ and open the template in the editor.
             <h2>Coordonnées personnelles</h2>
             <hr/>
             <div>
-                <h3>Adresse postale</h3>
-                <hr/>
-                <input id="rue" value="Rue"> <br/>
-                <input id="ville" value="Ville"> <input id="codePostal" value="Code postal"> <input id="Pays" value="Pays">
-                <h3>Numéro de téléphone</h3>
-                <hr/>
-                <input type="tel" id="telephone" value="+33">
+                <h2>Civilité</h2>
+            <hr/>
+            <input type="radio" name="civilite" id="civM">M. <br/>
+            <input type="radio" name="civilite" id="civMme">Mme <br/>
+            <input type="radio" name="civilite" id="civAutre">Autre <br/>
+            
+            <h2>Nom</h2>
+            <hr/>
+            <input id="nom">
+            
+            <h2>Prénom</h2>
+            <hr/>
+            <input id="prenom">
+            
+            <h2>Date de naissance</h2>
+            <hr/>
+            <input type="date" id="dateNaissance">
+            
+            <hr/>
+            <h3>Adresse postale</h3>
+            <hr/>
+            <input id="rue" value="Rue"> <br/>
+            <input id="ville" value="Ville"> <input id="codePostal" value="Code postal"> <input id="Pays" value="Pays">
+            <h3>Numéro de téléphone</h3>
+            <hr/>
+            <input type="tel" id="telephone" value="+33">
             </div>
             <h2>Informations de connexion</h2>
             <hr/>
@@ -40,5 +60,61 @@ and open the template in the editor.
             <hr/>
             <button id="Terminer">Terminer l'inscription</button>
         </div>
+        <script>
+            function inscription() {
+                var civilites = document.getElementsByName("civilite");
+                var civilite;
+                var i;
+                for (i = 0; i < civilites.length; i++) {
+                    if (civilites[i].checked == true) {
+                        civilite = civilites[i].id;
+                        console.log(civilite);
+                    }
+                }
+                
+                var champEmail = $('#mail').val();
+                var champNom = $('#nom').val();
+                var champPrenom = $('#prenom').val();
+                var champMdp = $('#mdp').val();
+                var champConfmdp = $('#confmdp').val();
+                var champDate = $('#dateNaissance').val();
+                var champRue = $('#rue').val();
+                var champVille = $('#ville').val();
+                var champCodePostal = $('#codePostal').val();
+                var champPays = $('#pays').val();
+                var champTelephone = $('#telephone').val();
+                $.ajax({
+                    url : './ClientServlet',
+                    method : 'POST',
+                    data: {
+                        action: 'inscription',
+                        civilite: civilite,
+                        email: champEmail,
+                        nom: champNom,
+                        prenom: champPrenom,
+                        dateNaissance: champDate,
+                        rue: champRue,
+                        ville: champVille,
+                        codePostal: champCodePostal,
+                        pays: champPays,
+                        telephone: champTelephone,
+                        mdp: champMdp,
+                        confmdp: champConfmdp,
+                    },
+                    datatype: 'json'
+                })
+                
+                
+            }
+            
+            $(document).ready(function() {
+                 $('#Terminer').on('click', function () {
+                    // affichage pour debugage dans la console javascript du navigateur
+                    console.log('Click sur le bouton "Inscription"');
+                    // appel de la fonction connexion
+                    inscription();
+                });
+            });
+        </script>
     </body>
 </html>

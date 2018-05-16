@@ -21,7 +21,7 @@
                 $('#message').html('Connexion en cours...');
 
                 $.ajax({
-                    url: './LoginServlet',
+                    url: './ClientServlet',
                     method: 'POST',
                     data: {
                         action: 'connecter',
@@ -33,7 +33,11 @@
                     // ici votre code...
                     // 
                     // si connexion ok, aller sur la page suivante :
-                    window.location = "MainClient.html";
+                    var connected = data.user.connexion;
+                    if (connected) {
+                        window.location = "MainClient.html";
+                    }
+                    
                     // si connexion pas ok afficher un texte dans la div message :
                     $('#message').html('Echec de la connexion');
                 });
