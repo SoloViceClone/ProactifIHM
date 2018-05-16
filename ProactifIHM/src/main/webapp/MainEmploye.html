@@ -9,40 +9,73 @@ and open the template in the editor.
         <title>TODO supply a title</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
         <link rel="stylesheet" href="stylesheet.css" />
     </head>
     <header>
     	<div class="conteneur_header">
     		<div class="header_gauche">
-    			<button>Tableau de bord</button> Proact'IF
+    			<button id="TableauDeBord">Tableau de bord</button> Proact'IF
     		</div>
     		<div class="header_droite">
-    			Prénom NOM
-    			<button>Se déconnecter</button>
+                    <div id="PrenomNom"></div>
     		</div>
     	</div>
     </header>
     <body>
         <h1>Historique des interventions</h1>
-        <div>
-        	<div class="conteneur_horizontal">
-        		<div>
-        			<h3>Type : Animal</h3>
-        			Description
-        			<div>
-        				Lorem ipsum
-        			</div>
-        			Animal : Chien
-        		</div>
-        		<div>
-        			<h3>Informations Clients</h3>
-        			Client : M. XXXX YY <br/>
-        			Numéro de téléphone : 01.23.45.67.89 <br/>
-        			Adresse : bla bla bla <br/>
-        			Email : zgeo@grejlkn.fr <br/>
-        		</div>
-        	</div>
-        	<button>Terminer l'intervention</button>
+        <div id="conteneur">
+        	
         </div>
+        
+        <script>
+
+            $(document).ready(function () {
+                // ajout d'un "handler" sur le clic du bouton de connexion
+                
+                //$('#TableauDeBord').on('click', function () {
+                //    window.location = "TableauDeBord.html";
+                //});
+                
+                $.ajax({
+                    url: './ActionServlet',
+                    method: 'POST',
+                    data: {
+                        action: 'historiqueIntervention',
+                    },
+                    dataType: 'json'
+                }).done(function (data) {
+                    $('#PrenomNom').html(data.nom + " " + data.prenom + " <button>Se déconnecter</button>");
+                    console.log(data.interventions);
+                    var liste = data.interventions
+                    var str ="";
+                    var i;
+                    for (i = 0; i < liste.length; i++) {
+                        str += "<div class='conteneur_horizontal'>\n\
+                                <div>\n\
+                                    <h3>Type : "+ liste[i].type +"</h3>\n\
+                                    Description\n\
+                                    <div>\n\
+                                            item.description\n\
+                                    </div>\n\
+                                    Animal : Chien\n\
+                                </div>\n\
+                                <div>\n\
+                                    <h3>Informations Clients</h3>\n\
+                                    Client : "+liste[i].civClient+" "+liste[i].prenomClient+" "+liste[i].nomClient+" <br/>\n\
+                                    Numéro de téléphone : "+liste[i].telClient+" <br/>\n\
+                                    Adresse : "+liste[i].rueClient+" "+liste[i].villeClient+"<br/>\n\
+                                    Email : "+liste[i].mailClient+" <br/>\n\
+                                </div>\n\
+                                </div>\n\
+                                <button id='Terminer"+i+"'>Terminer l'intervention</button>";
+                    }
+                    $('#conteneur').html(str);
+                    
+                });
+            });            
+            
+            
+        </script>
     </body>
 </html>
