@@ -12,6 +12,8 @@ import com.google.gson.JsonObject;
 import dao.JpaUtil;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
@@ -61,7 +63,7 @@ public class ClientServlet extends HttpServlet {
         } else if ("inscription".equals(action)) {
             inscriptionClient(request,out,sv);
         } else if ("getUser".equals(action)) {
-            getUser(session,out);
+            getUser(session,out,sv);
         } else if ("creerIncident".equals(action)) {
             String desc = request.getParameter("description");
             creerInterIncident(session,out,sv,desc);
@@ -151,7 +153,7 @@ public class ClientServlet extends HttpServlet {
         
     }
     
-    protected void getUser(HttpSession session, PrintWriter out) {
+    protected void getUser(HttpSession session, PrintWriter out, Service s) {
         Client c;
         c = (Client) session.getAttribute("client");
         
@@ -159,6 +161,30 @@ public class ClientServlet extends HttpServlet {
         JsonObject j = new JsonObject();
         j.addProperty("nom", c.getNom());
         j.addProperty("prenom", c.getPrenom());
+        JsonArray ja = new JsonArray();
+        List<Intervention> list = s.getHistoriqueClient(c);
+        for (Intervention i : list) {
+            System.out.println(i);
+            JsonObject ji = new JsonObject();
+            ji.addProperty("description",i.getDescription());
+            ji.addProperty("employeNom",i.getEmploye().getNom());
+            ji.addProperty("employePrenom",i.getEmploye().getPrenom());
+            ji.addProperty("finie",i.isEstFinie());
+            if (i.isEstFinie()) {
+                ji.addProperty("dateFin",i.getDateFin().toString());
+            }
+
+            
+            if (i instanceof Incident) {
+                ji.addProperty("type","Incident");
+            } else if (i instanceof Livraison) {
+                ji.addProperty("type","Livraison");
+            } else if (i instanceof Animal) {
+                ji.addProperty("type","Animal");
+            }
+            ja.add(ji);
+        }
+        j.add("history",ja);
         out.write(gson.toJson(j));
     }
     
@@ -209,6 +235,7 @@ public class ClientServlet extends HttpServlet {
         }
         out.write(gson.toJson(j));
     }
+    
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.

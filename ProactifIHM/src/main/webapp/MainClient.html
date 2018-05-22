@@ -27,6 +27,11 @@ and open the template in the editor.
         <input type="text" id="entreprise" placeholder="Entreprise" /><br/>
         <button id="button-livraison">Creer Intervention 2</button>
         <br/>
+        <h2>Animal</h2>
+        <input type="text" id="descAnimal" placeholder="Description" />
+        <input type="text" id="animal" placeholder="Animal" /> <br/>
+        <button id="button-animal">Creer Intervention 3</button>
+        <br/>
         <script>
             function incident() {
                 champDesc = $("#descIncident").val();
@@ -58,6 +63,32 @@ and open the template in the editor.
                 });
             }
             
+            function animal() {
+                champDesc = $("#descAnimal").val();
+                champAnimal = $("#animal").val();
+                $.ajax({
+                    url: "./ClientServlet",
+                    method: "POST",
+                    data: {
+                        action: "animal",
+                        description: champDesc,
+                        animal: champAnimal
+                    },
+                    datatype: 'json'
+                });
+            }
+            
+            function historique() {
+                $.ajax({
+                    url: "./ClientServlet",
+                    method: "GET",
+                    data: {
+                        action: "gethistory",
+                    },
+                    datatype: "json",
+                });
+            }
+            
             $(document).ready(function () {
                 $('#button-livraison').on('click',function () {
                     livraison();
@@ -67,12 +98,17 @@ and open the template in the editor.
                     incident();
                 });
                 
+                $("#button-animal").on('click',function() {
+                    animal();
+                });
+                
                 $.ajax({
                     url: './ClientServlet',
                     method: 'GET',
                     data: {
                         action: 'getUser'
-                    }
+                    },
+                    datatype: 'json',
                 }).done(function(data) {
                     $('#header').html('User ' + data.nom + ' ' + data.prenom);
                 });
