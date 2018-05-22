@@ -4,14 +4,18 @@
         <title>Exemple de page de login</title>
         <meta charset="UTF-8">
         <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <link rel="stylesheet" href="Style.css" />
     </head>
     <body>
-        <h1>Proact'IF pro grege</h1>
-        <input type="text" id="champ-login" name="login" placeholder="Adresse mail" /><br>
-        <input type="password" id="champ-password" name="password" placeholder="Mot de passe" /><br>
-        <button id="bouton-connexion">Se connecter</button>   
-        <div id="message"></div>
-        
+        <div class="verticalCenter complet">
+            <div class="center">
+                <h1>Proact'IF pro</h1>
+                <input type="text" id="champ-login" name="login" placeholder="Adresse mail" /><br>
+                <input type="password" id="champ-password" name="password" placeholder="Mot de passe" /><br>
+                <button id="bouton-connexion">Se connecter</button>   
+                <div id="message"></div>
+            </div>
+        </div>
         <script>
 
             function connexion() {

@@ -9,8 +9,151 @@ and open the template in the editor.
         <title>TODO supply a title</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        
+        <link rel="stylesheet" href="Style.css" />
     </head>
     <body>
-        <div>TODO write content</div>
+        <header>
+            <div class="conteneur_header">
+                    <div class="header_gauche">
+                            <button id="Retour">Retour</button> Proact'IF
+                    </div>
+                    <div class="header_droite">
+                        <div id="PrenomNom"></div>
+                    </div>
+            </div>
+        </header>
+        
+        <h1>Détails de l'intervention</h1>
+        <div class='conteneur_horizontal complet'>
+            <div id='conteneurFTDB' class="dotted"></div>
+        
+        <div id='map'></div>
+        </div>
+        
+        <script>
+            var googleMapInstance = null;
+            
+            $(document).ready(function () {
+                
+                $('#Retour').on('click', function () {
+                    window.location = "TableauDeBord.html";
+                });
+                
+                
+                
+                $.ajax({
+                    url: './ActionServlet',
+                    method: 'POST',
+                    data: {
+                        action: 'FocusTableauDeBord'
+                    },
+                    dataType: 'json'
+                }).done(function (data) {
+                    if(data.connexion)
+                    {
+                        $('#PrenomNom').html(data.employe.nom + " " + data.employe.prenom + " <button onclick='deconnexion()'>Se déconnecter</button>");
+                        var str ="";
+                        var image;
+                        if(data.intervention.estFinie)
+                        {
+                            if(data.intervention.aucunSoucis)
+                            {
+                                image = "./image/cercleVert.png";
+                            }
+                            else
+                            {
+                                image = "./image/cercleRouge.png";
+                            }
+                        }
+                        else
+                        {
+                            image = "./image/cercleOrange.png";
+                        }
+                        str += "<div>\n\
+                                    <div>\n\
+                                        <h3><img src='"+ image +"' height='20' width='20'>Type : "+ data.intervention.type +"</h3>\n\
+                                        Description\n\
+                                        <div>\n\
+                                                "+data.intervention.description+"\n\
+                                        </div>\n";
+                            if(data.intervention.type == "Animal")
+                            {
+                                str += "Animal : " + data.intervention.animal;
+                            }
+                            else if(data.intervention.type == "Livraison")
+                            {
+                                str += "Entreprise : " + data.intervention.entreprise + "<br/>\n\
+                                        Objet : " +data.intervention.objet + "<br/>\n";
+                            }
+                            str += "</div>\n\
+                                    <div>\n\
+                                        <h3>Informations Clients</h3>\n\
+                                        Client : "+data.intervention.civClient+" "+data.intervention.prenomClient+" "+data.intervention.nomClient+" <br/>\n\
+                                        Numéro de téléphone : "+data.intervention.telClient+" <br/>\n\
+                                        Adresse : "+data.intervention.rueClient+" "+data.intervention.villeClient+"<br/>\n\
+                                        Email : "+data.intervention.mailClient+" <br/>\n\
+                                    </div>\n\
+                                    </div>";
+                            var iconImage = {url: image, scaledSize: new google.maps.Size(32, 32)};
+                            var marker = new google.maps.Marker({
+                                            map: googleMapInstance,
+                                            position: {lat: data.intervention.lat, lng: data.intervention.lon},
+                                            title: "",
+                                            icon: iconImage
+                                            })
+                        $('#conteneurFTDB').html(str);
+                    }
+                    else
+                    {
+                        window.location = "AccueilEmploye.html";
+                    }
+                });
+            });
+            
+                       
+            function deconnexion(){
+                window.location = "AccueilEmploye.html";
+            
+                $.ajax({
+                       url: './ActionServlet',
+                       method: 'POST',
+                       data: {
+                           action: 'deconnexion',
+                       },
+                       dataType: 'json'
+                });
+            }
+            
+            function choixIntervention(i){
+                var indice = parseInt(i)-1;
+                
+                $.ajax({
+                       url: './ActionServlet',
+                       method: 'POST',
+                       data: {
+                           action: 'choixInterventionTDB',
+                           indice: indice
+                       },
+                       dataType: 'json'
+                }).done(function (data) {
+                    window.location = "FocusTableauDeBord.html"
+                });
+            }
+
+            function initMap() {
+
+                googleMapInstance = new google.maps.Map(document.getElementById('map'), {
+                    center: {lat: 45.7601424, lng: 4.8961779},
+                    zoom: 13
+                });
+            }
+
+            
+            
+        </script>
+        <script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAklw96N9rLd93ubr-F04CN7qi2ryKayAc&callback=initMap">
+        </script>
     </body>
 </html>

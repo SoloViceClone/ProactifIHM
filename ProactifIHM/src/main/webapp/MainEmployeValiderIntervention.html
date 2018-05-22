@@ -9,8 +9,129 @@ and open the template in the editor.
         <title>TODO supply a title</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <link rel="stylesheet" href="Style.css" />
     </head>
+
     <body>
-        <div>TODO write content</div>
+        <header>
+            <div class="conteneur_header">
+                    <div class="header_gauche">
+                            <button id="TableauDeBord">Tableau de bord</button> Proact'IF
+                    </div>
+                    <div class="header_droite">
+                        <div id="PrenomNom"></div>
+                    </div>
+            </div>
+        </header>
+        <h1>Historique des interventions</h1>
+        <div class="dotted" style="width:50%;margin-left: auto;margin-right: auto;">
+            <div id="conteneur"></div>
+            <hr/>
+            <div class='conteneur_horizontal space-around'>
+                <div>
+                    <input type='radio' name='reussite' id='OK' value='true' checked>L'intervention a été réalisé avec succès<br/>
+                    <input type='radio' name='reussite' id='KO' value='false'>J'ai rencontré un problème <br/>
+                </div>
+                <div>
+                    Heure de Fin : <input id="HeureFin" type="time">
+                </div>
+            </div>
+            Commentaires : <br/>
+            <textarea id="Commentaires" name="message" rows="4" style="width:98%"></textarea> <br/>
+            <div class='conteneur_horizontal space-around'>
+                <div>
+                    <button id='Annuler' onclick='annuler()'>Annuler</button>
+                </div>
+                <div>
+                    <button id='Terminer' onclick='terminer()'>Terminer l'intervention</button>
+                </div>
+             
+            </div>
+        </div>
+        
+        <script>
+
+            $(document).ready(function () {
+                
+                $('#TableauDeBord').on('click', function () {
+                    window.location = "TableauDeBord.html";
+                });
+                
+                $.ajax({
+                    url: './ActionServlet',
+                    method: 'POST',
+                    data: {
+                        action: 'InterventionCourante'
+                    },
+                    dataType: 'json'
+                }).done(function (data) {
+                    if(data.connexion)
+                    {
+                        $('#PrenomNom').html(data.employe.nom + " " + data.employe.prenom + " <button onclick='deconnexion()'>Se déconnecter</button>");
+                        var intervention = data.intervention
+                        var str ="";
+                        var i;                      
+                        str += "<div class='conteneur_horizontal  space-around'>\n\
+                                    <div>\n\
+                                        <h3>Type : "+ intervention.type +"</h3>\n\
+                                        Description\n\
+                                        <div class='scroll'>\n\
+                                                "+intervention.description+"\n\
+                                        </div>\n\
+                                    </div>\n\
+                                    <div>\n\
+                                        <h3>Informations Clients</h3>\n\
+                                        Client : "+intervention.civClient+" "+intervention.prenomClient+" "+intervention.nomClient+" <br/>\n\
+                                        Numéro de téléphone : "+intervention.telClient+" <br/>\n\
+                                        Adresse : "+intervention.rueClient+" "+intervention.villeClient+"<br/>\n\
+                                        Email : "+intervention.mailClient+" <br/>\n\
+                                    </div>\n\
+                                </div>";
+                    
+                        $('#conteneur').html(str);
+                    }
+                    else
+                    {
+                        window.location = "AccueilEmploye.html";
+                    }
+                });
+            });
+            
+            function deconnexion(){
+                window.location = "AccueilEmploye.html";
+            
+                $.ajax({
+                       url: './ActionServlet',
+                       method: 'POST',
+                       data: {
+                           action: 'deconnexion',
+                       },
+                       dataType: 'json'
+                })
+            }
+            
+            function annuler(){
+                window.location = "MainEmploye.html";
+            }
+            
+            function terminer(){
+                
+                $.ajax({
+                    url: './ActionServlet',
+                    method: 'POST',
+                    data: {
+                        action: 'ValiderIntervention',
+                        dateFin: HeureFin.value,
+                        aucunSoucis: OK.checked,
+                        commentaire: Commentaires.value
+                    },
+                    dataType: 'json'
+                }).done(function (data) {
+                    window.location = "MainEmploye.html";
+                });                
+            }
+            
+        </script>
     </body>
 </html>

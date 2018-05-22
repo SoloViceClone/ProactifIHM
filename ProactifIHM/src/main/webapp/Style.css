@@ -1,0 +1,96 @@
+html, body 
+{ 
+	height: 100%; 
+	margin: 0; 
+	padding: 0; 
+}
+            
+h1 
+{ 
+	text-align: center; 
+}
+
+div.complet{
+	width : 100%;
+	height : 100%;
+}
+
+.dotted, header
+{
+	border-style: dotted;
+	border-width: 2px;
+}
+
+.conteneur_header
+{
+	display: flex;
+	justify-content: space-between;
+}
+
+.conteneur_horizontal
+{
+	display: flex;
+	justify-content: center;
+	width: 100%;
+}
+
+.space-around
+{
+	justify-content: space-around;
+}
+
+.center
+{
+	text-align: center;
+}
+
+.verticalCenter
+{
+	display:inline-block;
+	vertical-align:middle;
+}
+
+.centerBloc
+{
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.scroll
+{
+    overflow-y : scroll;
+    height: 2cm;
+    width: 5cm;
+    border: solid;
+    border-width: 1px;
+}
+
+#map 
+{ 
+    height: 80%; 
+    width: 100%;
+}
+
+#mapFTDB
+{ 
+    height: 80%; 
+    width: 75%;
+}
+
+#conteneurTDB
+{
+	width:25%;
+}
+
+#conteneurFTDB
+{
+	width:50%;
+	padding-left: 0.2cm;
+}
+
+
+
+#resteTDB
+{
+	width:75%;
+}

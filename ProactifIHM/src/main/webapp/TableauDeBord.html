@@ -9,8 +9,205 @@ and open the template in the editor.
         <title>TODO supply a title</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        
+        <link rel="stylesheet" href="Style.css" />
     </head>
     <body>
-        <div>TODO write content</div>
+        <header class="dotted">
+            <div class="conteneur_header">
+                    <div class="header_gauche">
+                            <button id="Retour">Retour</button> Proact'IF
+                    </div>
+                    <div class="header_droite">
+                        <div id="PrenomNom"></div>
+                    </div>
+            </div>
+        </header>
+        
+        <div class='conteneur_horizontal complet'>
+            <div id='conteneurTDB' class="dotted"></div>
+            <div id='resteTDB' class="center">
+                <h1>Tableau de bord</h1>
+                <div class='dotted'>
+                <h2>Filtres</h2>
+                Que voulez-vous voir ?
+                <div class='conteneur_horizontal space-around'>
+                    <div>
+                        Sélectionner les intervention...<br/>
+                        <input type="checkbox" id="enCours" onchange="actualiserTDB()" checked><label for="enCours">En cours</label><br/>
+                        <input type="checkbox" id="Terminee" onchange="actualiserTDB()" checked><label for="Terminee">Terminées avec succés</label><br/>
+                        <input type="checkbox" id="Echouee" onchange="actualiserTDB()" checked><label for="Echouee">Echouées</label>
+                    </div>
+                    <div>
+                        Les interventions du type :<br/>
+                        <input type="checkbox" id="Animal" onchange="actualiserTDB()" checked><label for="enCours">Animal</label><br/>
+                        <input type="checkbox" id="Incident" onchange="actualiserTDB()" checked><label for="Terminee">Incident</label><br/>
+                        <input type="checkbox" id="Livraison" onchange="actualiserTDB()" checked><label for="Echouee">Livraison</label>
+                    </div>
+                </div>
+                </div>
+
+
+                <div id='map' ></div>
+                
+            </div>
+        </div>
+        
+        <script>
+            var googleMapInstance = null;
+            var markers = [];
+            
+            
+            $(document).ready(function () {
+                
+                $('#Retour').on('click', function () {
+                    window.location = "MainEmploye.html";
+                });
+                
+                actualiserTDB();
+                
+                
+            });
+            
+            function actualiserTDB(){
+                clearMap();
+                
+                $.ajax({
+                    url: './ActionServlet',
+                    method: 'POST',
+                    data: {
+                        action: 'TableauDeBord'
+                    },
+                    dataType: 'json'
+                }).done(function (data) {
+                    if(data.connexion)
+                    {
+                        $('#PrenomNom').html(data.employe.nom + " " + data.employe.prenom + " <button onclick='deconnexion()'>Se déconnecter</button>");
+                        var liste = data.interventions
+                        var str ="";
+                        var i;
+                        for (i = 0; i < liste.length; i++) {
+                            if(doitEtreAfficher(liste[i].aucunSoucis, liste[i].estFinie, liste[i].type))
+                            {
+                                var image;
+                                if(liste[i].estFinie)
+                                {
+                                    if(liste[i].aucunSoucis)
+                                    {
+                                        image = "./image/cercleVert.png";
+                                    }
+                                    else
+                                    {
+                                        image = "./image/cercleRouge.png";
+                                    }
+                                }
+                                else
+                                {
+                                    image = "./image/cercleOrange.png";
+                                }
+                                str += "<h3><img src='"+ image +"' height='20' width='20'>"+(i+1)+"  Type : "+ liste[i].type +"</h3>\n\
+                                            Description\n\
+                                            <div>\n\
+                                                    "+liste[i].description+"\n\
+                                            </div>\n";
+                                if(liste[i].type == "Animal")
+                                {
+                                    str += "Animal : " + liste[i].animal + "<br/>\n";
+                                }
+                                else if(liste[i].type == "Livraison")
+                                {
+                                    str += "Entreprise : " + liste[i].entreprise + "<br/>\n\
+                                            Objet : " +liste[i].objet + "<br/>\n";
+                                }
+                                str += "Nom de l'employé : " + liste[i].civEmploye + " " + liste[i].nomEmploye;
+
+
+
+                                var iconImage = {url: image, scaledSize: new google.maps.Size(32, 32)};
+                                markers.push(new google.maps.Marker({
+                                                map: googleMapInstance,
+                                                position: {lat: liste[i].lat, lng: liste[i].lon},
+                                                title: ""+(i+1),
+                                                icon: iconImage
+                                                }));
+                                markers[markers.length-1].addListener('click', function () {
+                                    choixIntervention(this.title);
+                                });
+                            }
+                        }
+                        $('#conteneurTDB').html(str);
+                    }
+                    else
+                    {
+                        window.location = "AccueilEmploye.html";
+                    }
+                });
+            }
+            
+            function doitEtreAfficher(reussie, finie, type)
+            {
+                var enCours = $('#enCours')[0].checked;
+                var terminee = $('#Terminee')[0].checked;
+                var echoue = $('#Echouee')[0].checked;
+                var animal = $('#Animal')[0].checked;
+                var incident = $('#Incident')[0].checked;
+                var livraison = $('#Livraison')[0].checked;
+                //var test = ((enCours && !finie) || (finie && (terminee && reussie) || (echoue && !reussie))) && 
+                //        ((animal && type=="Animal") || (incident && type=="Incident") || (livraison && type=="Livraison"));
+                var test = ((enCours && !finie) || (finie && ((terminee && reussie) || (echoue && !reussie)))  && ((animal && type=="Animal")|| (incident && type=="Incident") || (livraison && type=="Livraison")));
+                return test;
+            }
+            
+                       
+            function deconnexion(){
+                window.location = "AccueilEmploye.html";
+            
+                $.ajax({
+                       url: './ActionServlet',
+                       method: 'POST',
+                       data: {
+                           action: 'deconnexion',
+                       },
+                       dataType: 'json'
+                });
+            }
+            
+            function choixIntervention(i){
+                var indice = parseInt(i)-1;
+                
+                $.ajax({
+                       url: './ActionServlet',
+                       method: 'POST',
+                       data: {
+                           action: 'choixInterventionTDB',
+                           indice: indice
+                       },
+                       dataType: 'json'
+                }).done(function (data) {
+                    window.location = "FocusTableauDeBord.html"
+                });
+            }
+
+            function initMap() {
+
+                googleMapInstance = new google.maps.Map(document.getElementById('map'), {
+                    center: {lat: 45.7601424, lng: 4.8961779},
+                    zoom: 13
+                });
+            }
+            
+            function clearMap() {
+                for (var i = 0; i < markers.length; i++ ) {
+                  markers[i].setMap(null);
+                }
+                markers.length = 0;
+            }
+
+            
+            
+        </script>
+        <script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAklw96N9rLd93ubr-F04CN7qi2ryKayAc&callback=initMap">
+        </script>
     </body>
 </html>
