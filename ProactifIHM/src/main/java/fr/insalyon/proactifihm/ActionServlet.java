@@ -6,7 +6,6 @@
 package fr.insalyon.proactifihm;
 
 import dao.JpaUtil;
-import fr.insalyon.proactifihm.action.Action;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.logging.Level;
@@ -16,6 +15,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import modele.Employe;
 import service.Service;
 
@@ -44,11 +44,51 @@ public class ActionServlet extends HttpServlet {
             initialisation();
             first=false;
         }
+        response.setContentType("application/json");
         String action = request.getParameter("action");
         
         if("connecterEmploye".equals(action))
         {
             Action.connexionEmploye(request, response);
+        } 
+        else if(request.getSession().getAttribute("employe")!= null)
+        {
+            if("historiqueIntervention".equals(action))
+            {
+                Action.historique(request, response);
+            }
+            else if("deconnexion".equals(action))
+            {
+                Action.deconnexion(request);
+            }
+            else if("choixIntervention".equals(action))
+            {
+                Action.choixIntervention(request, response);
+            }
+            else if("InterventionCourante".equals(action))
+            {
+                Action.interventionCourante(request, response);
+            }
+            else if("ValiderIntervention".equals(action))
+            {
+                Action.validerIntervention(request, response);
+            }
+            else if("TableauDeBord".equals(action))
+            {
+                Action.tableauDeBord(request, response);
+            }
+            else if("choixInterventionTDB".equals(action))
+            {
+                Action.choixInterventionTDB(request, response);
+            }
+            else if("FocusTableauDeBord".equals(action))
+            {
+                Action.focusTableauDeBord(request, response);
+            }
+        } 
+        else
+        {
+            Action.nonConnecte(response);
         }
     }
     
@@ -64,9 +104,8 @@ public class ActionServlet extends HttpServlet {
     private void initialisation() {
         JpaUtil.init();
         Service s = new Service();
-        Employe e = new Employe("civilite", "Lezaud", "Victor", "mdp", 1, 1,1, "rue",  "ville", "pays", "numero", "mail", 5,0,20,0);
         try {
-            s.inscriptionEmploye(e);
+            s.peuplerLaBD();
         } catch (Exception ex) {
             Logger.getLogger(ActionServlet.class.getName()).log(Level.SEVERE, null, ex);
         }

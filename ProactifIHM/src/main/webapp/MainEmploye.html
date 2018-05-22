@@ -10,71 +10,135 @@ and open the template in the editor.
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-        <link rel="stylesheet" href="stylesheet.css" />
+        <link rel="stylesheet" href="Style.css" />
     </head>
-    <header>
-    	<div class="conteneur_header">
-    		<div class="header_gauche">
-    			<button id="TableauDeBord">Tableau de bord</button> Proact'IF
-    		</div>
-    		<div class="header_droite">
-                    <div id="PrenomNom"></div>
-    		</div>
-    	</div>
-    </header>
+    
     <body>
+        <header>
+            <div class="conteneur_header">
+                    <div class="header_gauche">
+                            <button id="TableauDeBord">Tableau de bord</button> Proact'IF
+                    </div>
+                    <div class="header_droite">
+                        <div id="PrenomNom"></div>
+                    </div>
+            </div>
+        </header>
         <h1>Historique des interventions</h1>
-        <div id="conteneur">
-        	
+        <div id="conteneurME" style="width:50%;margin-left: auto;margin-right: auto;">
+
         </div>
-        
         <script>
 
             $(document).ready(function () {
-                // ajout d'un "handler" sur le clic du bouton de connexion
                 
-                //$('#TableauDeBord').on('click', function () {
-                //    window.location = "TableauDeBord.html";
-                //});
+                $('#TableauDeBord').on('click', function () {
+                    window.location = "TableauDeBord.html";
+                });
                 
                 $.ajax({
                     url: './ActionServlet',
                     method: 'POST',
                     data: {
-                        action: 'historiqueIntervention',
+                        action: 'historiqueIntervention'
                     },
                     dataType: 'json'
                 }).done(function (data) {
-                    $('#PrenomNom').html(data.nom + " " + data.prenom + " <button>Se déconnecter</button>");
-                    console.log(data.interventions);
-                    var liste = data.interventions
-                    var str ="";
-                    var i;
-                    for (i = 0; i < liste.length; i++) {
-                        str += "<div class='conteneur_horizontal'>\n\
-                                <div>\n\
-                                    <h3>Type : "+ liste[i].type +"</h3>\n\
-                                    Description\n\
+                    if(data.connexion)
+                    {
+                        $('#PrenomNom').html(data.employe.nom + " " + data.employe.prenom + " <button onclick='deconnexion()'>Se déconnecter</button>");
+                        var liste = data.interventions
+                        var str ="";
+                        var i;
+                        for (i = 0; i < liste.length; i++) {
+                            var image;
+                            if(liste[i].estFinie)
+                            {
+                                if(liste[i].aucunSoucis)
+                                {
+                                    image = "./image/cercleVert.png";
+                                }
+                                else
+                                {
+                                    image = "./image/cercleRouge.png";
+                                }
+                            }
+                            else
+                            {
+                                image = "./image/cercleOrange.png";
+                            }
+                            str += "<div class='dotted'>\
+                                    <div class='conteneur_horizontal space-around'>\n\
                                     <div>\n\
-                                            item.description\n\
+                                        <h3><img src='"+ image +"' height='20' width='20'>Type : "+ liste[i].type +"</h3>\n\
+                                        Description\n\
+                                        <div class='scroll'>\n\
+                                                "+liste[i].description+"\n\
+                                        </div>\n";
+                            if(liste[i].type == "Animal")
+                            {
+                                str += "Animal : " + liste[i].animal;
+                            }
+                            else if(liste[i].type == "Livraison")
+                            {
+                                str += "Entreprise : " + liste[i].entreprise + "<br/>\n\
+                                        Objet : " +liste[i].objet + "<br/>\n";
+                            }
+                            str += "</div>\n\
+                                    <div>\n\
+                                        <h3>Informations Clients</h3>\n\
+                                        Client : "+liste[i].civClient+" "+liste[i].prenomClient+" "+liste[i].nomClient+" <br/>\n\
+                                        Numéro de téléphone : "+liste[i].telClient+" <br/>\n\
+                                        Adresse : "+liste[i].rueClient+" "+liste[i].villeClient+"<br/>\n\
+                                        Email : "+liste[i].mailClient+" <br/>\n\
                                     </div>\n\
-                                    Animal : Chien\n\
-                                </div>\n\
-                                <div>\n\
-                                    <h3>Informations Clients</h3>\n\
-                                    Client : "+liste[i].civClient+" "+liste[i].prenomClient+" "+liste[i].nomClient+" <br/>\n\
-                                    Numéro de téléphone : "+liste[i].telClient+" <br/>\n\
-                                    Adresse : "+liste[i].rueClient+" "+liste[i].villeClient+"<br/>\n\
-                                    Email : "+liste[i].mailClient+" <br/>\n\
-                                </div>\n\
-                                </div>\n\
-                                <button id='Terminer"+i+"'>Terminer l'intervention</button>";
+                                    </div>";
+                            if(liste[i].estFinie)
+                            {
+                                str += "<div class='center'><button class='InterventionTerminee'>Intervention terminée</button></div>"
+                            } 
+                            else
+                            {
+                                str += "<div class='center'><button class='TerminerIntervention' onclick='terminer("+i+")'>Terminer l'intervention</button></div></div>";
+                            }
+                                    
+                        }
+                        $('#conteneurME').html(str);
                     }
-                    $('#conteneur').html(str);
-                    
+                    else
+                    {
+                        window.location = "AccueilEmploye.html";
+                    }
                 });
-            });            
+            });
             
+            function terminer(i){
+                
+                $.ajax({
+                       url: './ActionServlet',
+                       method: 'POST',
+                       data: {
+                           action: 'choixIntervention',
+                           indice: i
+                       },
+                       dataType: 'json'
+                }).done(function (data) {
+                    window.location = "MainEmployeValiderIntervention.html"
+                });
+            }
+            
+            function deconnexion(){
+                window.location = "AccueilEmploye.html";
+            
+                $.ajax({
+                       url: './ActionServlet',
+                       method: 'POST',
+                       data: {
+                           action: 'deconnexion',
+                       },
+                       dataType: 'json'
+                });
+            }
             
         </script>
     </body>
