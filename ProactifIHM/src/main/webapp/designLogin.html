@@ -96,7 +96,6 @@ and open the template in the editor.
         <div class='main'>
             <div class='column left'>
                 <div class='columntitle'>Se connecter</div>
-                <div class='columntitle' id="message"></div>
                 <input type="text" id="champ-login" name="login" placeholder="Votre Identifiant" /><br/>
                 <input type="password" id="champ-password" name="password" placeholder="Mot de Passe"/><br/>
                 <button class='submit' id="bouton-connexion">Se connecter</button>
@@ -220,8 +219,8 @@ and open the template in the editor.
                 }).done(function(data) {
                     if (data.valideInscription) {
                         $("#notification").html("Mail envoyé à " + champEmail);
-                        setTimeout(function(){window.location.reload(true);}, 5000);
-                        
+                        setTimeout(function(){}, 5000);
+                        location.reload(false);
                     } else {
                         $("#notification").html("Vérifiez vos informations");
                     }

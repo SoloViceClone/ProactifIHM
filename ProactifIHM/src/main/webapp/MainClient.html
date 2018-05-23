@@ -6,33 +6,265 @@ and open the template in the editor.
 -->
 <html>
     <head>
-        <title>TODO supply a title</title>
+        <title>Proact'IF</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <style>
+            .navbar {
+                background-color: #393e69;
+                overflow: hidden;
+                border-radius: 5px;
+            }
+            
+            .navbar button.topbutton {
+                background-color: inherit;
+                color: white;
+                float: right;
+                border: none;
+                outline: none;
+                cursor: pointer;
+                padding: 14px 16px;
+                transition: 0.3s;
+                font-size: 17px;
+                font-weight: bold;
+            }
+            .navbar button.topbutton:hover {
+                background-color: #565fad ;
+            }
+            
+            .navbar button.buttonNom {
+                background-color: inherit;
+                color: white;
+                float: right;
+                border: none;
+                outline: none;
+                padding: 14px 16px;
+                transition: 0.3s;
+                font-size: 17px;
+            }
+            * {
+                box-sizing: border-box;
+                font-family: "Verdana";
+            }
+            
+            .main:after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+            .column {
+                float: left;
+                padding: 3px;
+                height: 900px;
+            }
+
+            .left {
+                width: 35%;
+                
+            }
+
+            .right {
+                width: 65%;
+            }
+            
+            .columntitle {
+                text-align: center;
+                font-size: 20px;
+                line-height: 40px;
+                -moz-user-select: none;
+                -khtml-user-select: none;
+                -webkit-user-select: none;
+                -o-user-select: none;
+            }
+            
+            .historiquezone {
+                -moz-user-select: none;
+                -khtml-user-select: none;
+                -webkit-user-select: none;
+                -o-user-select: none;
+                float: left;
+                width: 100%;
+                height: 90%;
+                padding: 0px;
+                overflow-y: scroll;
+            }
+            
+            .tab {
+                overflow: hidden;
+            }
+            
+            .tab button {
+                background-color: #f1f1f1;
+                border-radius: 10px;
+                float: left;
+                border: none;
+                outline: none;
+                cursor: pointer;
+                padding: 14px 16px;
+                transition: 0.3s;
+                width: 33.333%;
+            }
+            
+            .tab button:hover {
+                background-color: #ddd;
+            }
+            
+            .tab button.active {
+                background-color: #aaa;
+            }
+            
+            .tabcontent {
+                display: none;
+                height: 80%;
+                padding: 10px;
+                animation: fadeEffect 0.7s;
+            }
+            
+            @keyframes fadeEffect {
+                from {opacity: 0;}
+                to {opacity: 1;}
+            }
+            
+            .zonetitle{
+                padding: 10px 0px;
+                -moz-user-select: none;
+                -khtml-user-select: none;
+                -webkit-user-select: none;
+                -o-user-select: none;
+            }
+            
+            .tabcontent textarea {
+                border-radius: 10px;
+                text-align: left;
+                resize: none;
+                font-size: 17px;
+                padding: 10px;
+            }
+            .tabcontent textarea::placeholder {
+                font-size: 17px;
+            }
+            
+            .tabcontent .submit {
+                float: right;
+                height: 45px;
+                width: 120px;
+                font-weight: bold;
+                margin-top: 30px;
+            }
+            
+            .historique {
+                padding: 10px;
+                background-color: #d8d9e5 ;
+                border-style: dotted;
+                border-color: grey;
+                border-width: 2px;
+                border-radius: 10px;
+                margin-bottom: 5px;
+            }
+            
+            .histHeader:after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+            
+            .histType {
+                padding: 0px;
+                float: left;
+                width: 50%;
+            }
+            
+            .histDate {
+                padding: 0px;
+                float: right;
+                text-align: right;
+                width: 50%;
+            }
+            
+            .histDesc {
+                padding: 0px 0px 10px 10px;
+                font-size: 15px;
+                border-style: none none dashed none;
+                border-width: 0.75px;
+                width: 300px;
+                overflow: visible;
+            }
+            
+            .histEmploye {
+                padding: 12px 0px 0px 0px;
+            }
+        </style>
     </head>
-    
     <body>
-        <div>Header</div>
-        <div id="header">User</div>
-        <br/>
-        <h2>Incident</h2>
-        <input type="text" id="descIncident" placeholder="Description" /><br/>
-        <button id="button-incident">Creer Intervention 1</button>
-        <br/>
-        
-        <h2>Livraison</h2>
-        <input type="text" id="descLivraison" placeholder="Description" />
-        <input type="text" id="objet" placeholder="Objet" />
-        <input type="text" id="entreprise" placeholder="Entreprise" /><br/>
-        <button id="button-livraison">Creer Intervention 2</button>
-        <br/>
-        <h2>Animal</h2>
-        <input type="text" id="descAnimal" placeholder="Description" />
-        <input type="text" id="animal" placeholder="Animal" /> <br/>
-        <button id="button-animal">Creer Intervention 3</button>
-        <br/>
+        <div class = 'navbar'>
+            <button class='topbutton' onclick="deconnecter()">Déconnecter</button>
+            <button class='buttonNom' id='user'></button>
+        </div>
+        <div class='main'>
+            <div class='column left' style="background-color:#aaa;">
+                <div class='columntitle'>Historique des interventions</div>
+                <div class='historiquezone' id='historiquezone'></div>
+            </div>
+            <div class='column right' style="background-color:#bbb;">
+                <div class='columntitle'>Nouvelle demande d'intervention</div>
+                <div class='tab'>
+                    <button class='tabInterv' onclick="openTab(event,'Animal')" id="defaultOpen">Animal</button>
+                    <button class='tabInterv' onclick="openTab(event,'Incident')">Incident</button>
+                    <button class='tabInterv' onclick="openTab(event,'Livraison')">Livraison</button>
+                </div>
+                <div class="tabcontent" id="Animal">
+                    <div class="zonetitle">Description</div>
+                    <textarea id="descAnimal" placeholder="Description" style="width: 100%;height: 60%"></textarea>
+                    <div class="zonetitle">Animal</div>
+                    <textarea id="animal" placeholder="Animal" style="width: 100%;height: 20%"></textarea>
+                    <button class="submit" id="button-animal">Soumettre</button>
+                </div>
+                
+                <div class="tabcontent" id="Incident">
+                    <div class="zonetitle">Description</div>
+                    <textarea id="descIncident" placeholder="Description" style="width: 100%;height: 80%"></textarea>
+                    <button class="submit" id="button-incident">Soumettre</button>
+                </div>
+                <div class="tabcontent" id="Livraison">
+                    <div class="zonetitle">Description</div>
+                    <textarea id="descLivraison" placeholder="Description" style="width: 100%;height: 35%"></textarea>
+                    <div class="zonetitle">Objet</div>
+                    <textarea id="objet" placeholder="Objet" style="width: 100%;height: 20%"></textarea>
+                    <div class="zonetitle">Entreprise</div>
+                    <textarea id="entreprise" placeholder="Entreprise" style="width: 100%;height: 20%"></textarea>
+                    <button class="submit" id="button-livraison">Soumettre</button>
+                </div>
+            </div>
+        </div>
         <script>
+            function openTab(evt,type) {
+                
+                tabcontent = document.getElementsByClassName("tabcontent");
+                for (i = 0; i<tabcontent.length; i++) {
+                    tabcontent[i].style.display = "none";
+                }
+                
+                tabInterv = document.getElementsByClassName("tabInterv");
+                for (i = 0; i<tabInterv.length; i++) {
+                    tabInterv[i].className = tabInterv[i].className.replace(" active", "");
+                }
+                document.getElementById(type).style.display = "block";
+                evt.currentTarget.className += " active";
+            }
+            
+            function deconnecter() {
+                $.ajax({
+                    url: './ClientServlet',
+                    method: 'POST',
+                    data: {
+                        action: 'deconnexion',                      
+                    },
+                    datatype: 'json'
+                }).done(function() {
+                    window.location = "AccueilClient.html";
+                });;
+            }
             function incident() {
                 champDesc = $("#descIncident").val();
                 $.ajax({
@@ -70,7 +302,7 @@ and open the template in the editor.
                     url: "./ClientServlet",
                     method: "POST",
                     data: {
-                        action: "animal",
+                        action: "creerAnimal",
                         description: champDesc,
                         animal: champAnimal
                     },
@@ -110,11 +342,62 @@ and open the template in the editor.
                     },
                     datatype: 'json',
                 }).done(function(data) {
-                    $('#header').html('User ' + data.nom + ' ' + data.prenom);
+                    if (!data.loggedIn) {
+                        window.location = "AccueilClient.html";
+                    }
+                    $('#user').html(data.nom + ' ' + data.prenom);
+                    for (i = 0; i<data.history.length; i++) {
+                        affichageHistorique(data.history[i]);
+                    }
                 });
             });
             
-            
+            function affichageHistorique(hist) {
+                var historique = document.createElement("div");
+                historique.className = "historique";
+                
+                var header = document.createElement("div");
+                header.className = "histHeader";
+                
+                im = document.createElement("img");
+                if (hist.finie) {
+                    im.src = "image/cercleRouge.png";
+                } else {
+                    im.src = "image/cercleVert.png";
+                }
+                im.width = "20";
+                im.height = "20";
+                var type = document.createElement("div");
+                type.className = "histType";
+                type.append(im);
+                type.innerHTML = type.innerHTML + "  Type : " + hist.type;
+                
+                var date = document.createElement("div");
+                date.className = "histDate";
+                date.innerHTML = hist.horodate.substr(4,7) + hist.horodate.substr(25);
+                header.append(type);
+                header.append(date);
+                
+                descTitle = document.createElement("div");
+                descTitle.className = "zonetitle";
+                descTitle.innerHTML = "Description";
+                
+                desc = document.createElement("div");
+                desc.className = "histDesc";
+                desc.innerHTML = hist.description;
+                
+                employe = document.createElement("div");
+                employe.className = "histEmploye";
+                employe.innerHTML = "Nom de l'employé : " + hist.employeNom + " " + hist.employePrenom;
+                
+                historique.append(header);
+                historique.append(descTitle);
+                historique.append(desc);
+                historique.append(employe);
+                
+                document.getElementsByClassName('historiquezone')[0].append(historique);
+            }
+            document.getElementById("defaultOpen").click();
         </script>
     </body>
 </html>
